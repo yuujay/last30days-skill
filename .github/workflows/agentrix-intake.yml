@@ -1,0 +1,24 @@
+name: Agentrix review intake
+on:
+  pull_request_target:
+    types: [opened]
+permissions:
+  contents: read
+  pull-requests: read
+  id-token: write
+jobs:
+  submit:
+    if: github.repository == 'yuujay/last30days-skill'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Submit durable review task
+        env:
+          AGENTRIX_URL: ${{ vars.AGENTRIX_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
+        working-directory: .github/scripts
+        run: python3 agentrix.py submit
